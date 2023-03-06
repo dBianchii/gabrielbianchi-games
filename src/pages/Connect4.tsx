@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-export default function Game() {
+function Game() {
   const nullArr = [null, null, null, null, null, null];
 
   const [col1, setCol1] = useState<(string | null)[]>(nullArr);
@@ -87,6 +87,18 @@ function Circle({ fill }: { fill: string }) {
           fill={fill}
         />
       </svg>
+    </div>
+  );
+}
+
+export default function Connect4() {
+  return (
+    <div>
+      <h1 className="text-5xl font-extrabold tracking-tight text-cyan-800 sm:text-[5rem]">
+        Connect 4
+      </h1>
+
+      <Game />
     </div>
   );
 }
