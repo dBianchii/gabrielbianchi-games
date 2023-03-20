@@ -11,7 +11,7 @@ function Game() {
                 <div
                   key={p}
                   className={`h-16 w-16 border-gray-400 bg-${
-                    (p + i) % 2 == 0 ? "black" : "white"
+                    (p + i + 1) % 2 == 0 ? "black" : "white"
                   }`}
                 />
               ))}
