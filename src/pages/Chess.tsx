@@ -1,18 +1,22 @@
 function Game() {
   return (
     <div className="flex flex-col">
-      <div className="mx-auto flex max-w-4xl flex-row">
-        {Array(20)
-          .fill({})
-          .map((o, i) => (
-            <div
-              key={i}
-              className={`h-16 w-16 border-gray-400 bg-${
-                i % 2 == 0 ? "black" : "white"
-              }`}
-            ></div>
-          ))}
-      </div>
+      {Array(8)
+        .fill("")
+        .map((o, i) => (
+          <div className="flex" key={i}>
+            {Array(8)
+              .fill("")
+              .map((o, p) => (
+                <div
+                  key={p}
+                  className={`h-16 w-16 border-gray-400 bg-${
+                    (p + i) % 2 == 0 ? "black" : "white"
+                  }`}
+                />
+              ))}
+          </div>
+        ))}
     </div>
   );
 }
