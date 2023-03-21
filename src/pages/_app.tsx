@@ -18,7 +18,7 @@ interface LayoutProps {
 
 const Layout = ({ children }: LayoutProps) => {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center scroll-smooth bg-gradient-to-tl from-purple-300 to-cyan-500">
+    <main className="flex min-h-screen flex-col items-center justify-center scroll-smooth bg-gradient-to-tl from-purple-500 to-cyan-500">
       {children}
     </main>
   );
