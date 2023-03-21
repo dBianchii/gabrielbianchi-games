@@ -1,3 +1,5 @@
+import classNames from "classnames";
+
 function Game() {
   type Piece = {
     // Define properties of the Piece type here
@@ -16,9 +18,10 @@ function Game() {
           {row.map((piece, j) => (
             <div
               key={j}
-              className={`h-16 w-16 border-gray-400 bg-${
-                (i + j) % 2 === 0 ? "black" : "white"
-              }`}
+              className={classNames("h-16 w-16 border-gray-400", {
+                "bg-white": (i + j) % 2 === 0,
+                "bg-black": (i + j) % 2 === 1,
+              })}
             ></div>
           ))}
         </div>
