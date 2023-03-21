@@ -1,6 +1,5 @@
 import classNames from "classnames";
-import chessSvg from "./chess.svg";
-import Image from "next/image";
+import ChessSVG from "../../assets/chess.svg";
 
 function Game() {
   const board: string[][] = [
@@ -31,12 +30,8 @@ function Game() {
           ))}
         </div>
       ))}
-      <Image
-        alt="chess-svg"
-        src={chessSvg as Static}
-        width="45"
-        height="45"
-      ></Image>
+
+      <ChessSVG />
     </div>
   );
 }
