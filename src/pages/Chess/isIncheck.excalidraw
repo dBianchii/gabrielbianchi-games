@@ -1,0 +1,48 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "https://marketplace.visualstudio.com/items?itemName=pomdtr.excalidraw-editor",
+  "elements": [
+    {
+      "type": "text",
+      "version": 409,
+      "versionNonce": 833779905,
+      "isDeleted": false,
+      "id": "bBTWLO0A944zBczKqCTit",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "angle": 0,
+      "x": 420.8000183105469,
+      "y": 174.8000030517578,
+      "strokeColor": "#1e1e1e",
+      "backgroundColor": "transparent",
+      "width": 500.2994689941406,
+      "height": 300,
+      "seed": 617623695,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": null,
+      "boundElements": [],
+      "updated": 1708985597701,
+      "link": null,
+      "locked": false,
+      "fontSize": 20,
+      "fontFamily": 1,
+      "text": "\n- Checar nas horizontais e verticais se:\n    - Tem rainha, ou torre\n- Checar nas diagonais se tem:\n    - rainha ou bispo\n- Checar nas 2 diagonais imediatas do rei se tem:\n   - piao.\n- Checar nos L's se tem: \n   - cavalo\n- Checar nas ao redor do rei se tem: \n   - REI\n",
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "containerId": null,
+      "originalText": "\n- Checar nas horizontais e verticais se:\n    - Tem rainha, ou torre\n- Checar nas diagonais se tem:\n    - rainha ou bispo\n- Checar nas 2 diagonais imediatas do rei se tem:\n   - piao.\n- Checar nos L's se tem: \n   - cavalo\n- Checar nas ao redor do rei se tem: \n   - REI\n",
+      "lineHeight": 1.25,
+      "baseline": 292
+    }
+  ],
+  "appState": {
+    "gridSize": null,
+    "viewBackgroundColor": "#ffffff"
+  },
+  "files": {}
+}

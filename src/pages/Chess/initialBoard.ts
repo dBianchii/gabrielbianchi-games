@@ -1,13 +1,16 @@
 import { b, B, k, K, n, N, p, P, q, Q, r, R, type Piece } from "./pieces";
-const emptyRow = Array(8).fill(undefined) as (Piece | undefined)[];
+export type Board = (Piece | undefined)[][];
+const emptyRow = Array(8).fill(undefined) as Board[number];
 
-export const initialBoard: (Piece | undefined)[][] = [
+export type Coord = { y: number; x: number };
+
+export const initialBoard: Board = [
   [r, n, b, q, k, b, n, r],
   [p, p, p, p, p, p, p, p],
-  emptyRow,
-  emptyRow,
-  emptyRow,
-  emptyRow,
+  [...emptyRow],
+  [...emptyRow],
+  [...emptyRow],
+  [...emptyRow],
   [P, P, P, P, P, P, P, P],
   [R, N, B, Q, K, B, N, R],
 ];

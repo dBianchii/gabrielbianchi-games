@@ -3,36 +3,24 @@ import classNames from "classnames";
 import { useEffect, useState } from "react";
 import { initialBoard } from "./initialBoard";
 import { type Piece } from "./pieces";
-import { getPieceColor, isOutOfBounds, otherColor } from "./utils";
+import { pieceColor, getPiece, isInCheck, otherColor } from "./utils";
 
 function Game({
   turn,
   setTurn,
-  selectedCoords,
-  setSelectedCoords,
 }: {
   turn: "white" | "black";
   setTurn: (turn: "white" | "black") => void;
-  selectedCoords?: { x: number; y: number };
-  setSelectedCoords: (coords: { x: number; y: number } | undefined) => void;
 }) {
   const [board, setBoard] = useState(initialBoard);
+
   const [canCastle, setCanCastle] = useState({
     white: { king: true, queen: true },
     black: { king: true, queen: true },
   });
-
-  const hasPiece = (
-    y: number,
-    x: number,
-    color: "white" | "black" | undefined = undefined
-  ) => {
-    const piece = board[y]?.[x];
-    if (!piece) return false;
-    if (!color) return true;
-    const pieceColor = getPieceColor(piece);
-    return pieceColor === color;
-  };
+  const [selectedCoords, setSelectedCoords] = useState<
+    { x: number; y: number } | undefined
+  >();
 
   const availableSquaresMoves: {
     y: number;
@@ -41,14 +29,26 @@ function Game({
   }[] = [];
   // Add logic to calculate available moves
   if (selectedCoords) {
-    const selectedPiece = initialBoard[selectedCoords.y]?.[selectedCoords.x];
+    const selectedPiece = board[selectedCoords.y]?.[selectedCoords.x];
     if (!selectedPiece)
       throw new Error("Selected piece is undefined but we have selectedCoords");
 
     //Let's separate the color from the id.
-    const selectedPieceColor = getPieceColor(selectedPiece);
+    const selectedPieceColor = pieceColor(selectedPiece);
 
     const { y: selectedY, x: selectedX } = selectedCoords;
+
+    const doCoordinateCheck = (y: number, x: number) => {
+      // if (isOutOfBounds(y, x)) return true;
+      if (getPiece({ board, y, x })) {
+        if (getPiece({ board, y, x, color: otherColor(selectedPieceColor) }))
+          availableSquaresMoves.push({ y, x }); //Capture
+        return true;
+      }
+
+      availableSquaresMoves.push({ y, x });
+      return false;
+    };
 
     switch (selectedPiece.id.toLowerCase()) {
       case "p": {
@@ -59,38 +59,44 @@ function Game({
               //Move forward
               y: selectedY + u,
               x: selectedX,
-              condition: () => !hasPiece(selectedY + u, selectedX),
+              condition: () =>
+                !!!getPiece({ board, y: selectedY + u, x: selectedX }),
             },
             {
               //Move forward 2
               y: selectedY + u + u,
               x: selectedX,
-              condition: () => selectedY === 1 || selectedY === 6,
+              condition: () =>
+                (selectedY === 1 || selectedY === 6) &&
+                !!!getPiece({ board, y: selectedY + u, x: selectedX }) &&
+                !!!getPiece({ board, y: selectedY + u + u, x: selectedX }),
             },
             {
               //Capture
               y: selectedY + u,
               x: selectedX - 1,
               condition: () =>
-                hasPiece(
-                  selectedY + u,
-                  selectedX - 1,
-                  otherColor(selectedPieceColor)
-                ),
+                !!getPiece({
+                  board,
+                  y: selectedY + u,
+                  x: selectedX - 1,
+                  color: otherColor(selectedPieceColor),
+                }),
             },
             {
               //Capture
               y: selectedY + u,
               x: selectedX + 1,
               condition: () =>
-                hasPiece(
-                  selectedY + u,
-                  selectedX + 1,
-                  otherColor(selectedPieceColor)
-                ),
+                !!getPiece({
+                  board,
+                  y: selectedY + u,
+                  x: selectedX + 1,
+                  color: otherColor(selectedPieceColor),
+                }),
             },
-          ].filter(({ y, x, condition }) => {
-            if (isOutOfBounds(y, x)) return false;
+          ].filter(({ condition }) => {
+            // if (isOutOfBounds(y, x)) return false;
             if (condition && !condition()) return false;
 
             return true;
@@ -104,25 +110,12 @@ function Game({
         let stopRight = false;
         let stopLeft = false;
 
-        const handleDirectionCheck = (y: number, x: number, stop: boolean) => {
-          if (isOutOfBounds(y, x)) stop = true;
-          else if (hasPiece(y, x)) {
-            stop = true;
-            if (hasPiece(y, x, otherColor(selectedPieceColor)))
-              availableSquaresMoves.push({ y, x }); //Capture
-          } else availableSquaresMoves.push({ y, x });
-          return stop;
-        };
-
         for (let i = 1; i < 8; i++) {
-          if (!stopUp)
-            stopUp = handleDirectionCheck(selectedY - i, selectedX, false);
-          if (!stopDown)
-            stopDown = handleDirectionCheck(selectedY + i, selectedX, false);
+          if (!stopUp) stopUp = doCoordinateCheck(selectedY - i, selectedX);
+          if (!stopDown) stopDown = doCoordinateCheck(selectedY + i, selectedX);
           if (!stopRight)
-            stopRight = handleDirectionCheck(selectedY, selectedX + i, false);
-          if (!stopLeft)
-            stopLeft = handleDirectionCheck(selectedY, selectedX - i, false);
+            stopRight = doCoordinateCheck(selectedY, selectedX + i);
+          if (!stopLeft) stopLeft = doCoordinateCheck(selectedY, selectedX - i);
         }
         break;
       }
@@ -136,12 +129,13 @@ function Game({
           { y: selectedY + 1, x: selectedX + 2 },
           { y: selectedY + 2, x: selectedX - 1 },
           { y: selectedY + 2, x: selectedX + 1 },
-        ].filter((c) => !isOutOfBounds(c.y, c.x));
-        availableSquaresMoves.push(
-          ...possibleMoves.filter(
-            ({ y, x }) => !hasPiece(y, x, selectedPieceColor)
-          )
-        );
+        ]
+          // .filter((c) => !isOutOfBounds(c.y, c.x))
+          .filter(
+            ({ y, x }) => !getPiece({ board, y, x, color: selectedPieceColor })
+          );
+
+        availableSquaresMoves.push(...possibleMoves);
         break;
       }
       case "b": {
@@ -150,41 +144,15 @@ function Game({
         let stopDownRight = false;
         let stopDownLeft = false;
 
-        const handleDirectionCheck = (y: number, x: number, stop: boolean) => {
-          if (isOutOfBounds(y, x)) stop = true;
-          else if (hasPiece(y, x)) {
-            stop = true;
-            if (hasPiece(y, x, otherColor(selectedPieceColor)))
-              availableSquaresMoves.push({ y, x }); //Capture
-          } else availableSquaresMoves.push({ y, x });
-          return stop;
-        };
-
         for (let i = 1; i < 8; i++) {
           if (!stopUpRight)
-            stopUpRight = handleDirectionCheck(
-              selectedY - i,
-              selectedX + i,
-              false
-            );
+            stopUpRight = doCoordinateCheck(selectedY - i, selectedX + i);
           if (!stopUpLeft)
-            stopUpLeft = handleDirectionCheck(
-              selectedY - i,
-              selectedX - i,
-              false
-            );
+            stopUpLeft = doCoordinateCheck(selectedY - i, selectedX - i);
           if (!stopDownRight)
-            stopDownRight = handleDirectionCheck(
-              selectedY + i,
-              selectedX + i,
-              false
-            );
+            stopDownRight = doCoordinateCheck(selectedY + i, selectedX + i);
           if (!stopDownLeft)
-            stopDownLeft = handleDirectionCheck(
-              selectedY + i,
-              selectedX - i,
-              false
-            );
+            stopDownLeft = doCoordinateCheck(selectedY + i, selectedX - i);
         }
         break;
       }
@@ -198,49 +166,20 @@ function Game({
         let stopDownRight = false;
         let stopDownLeft = false;
 
-        const handleDirectionCheck = (y: number, x: number, stop: boolean) => {
-          if (isOutOfBounds(y, x)) stop = true;
-          else if (hasPiece(y, x)) {
-            stop = true;
-            if (hasPiece(y, x, otherColor(selectedPieceColor)))
-              availableSquaresMoves.push({ y, x }); //Capture
-          } else availableSquaresMoves.push({ y, x });
-          return stop;
-        };
-
         for (let i = 1; i < 8; i++) {
-          if (!stopUp)
-            stopUp = handleDirectionCheck(selectedY - i, selectedX, false);
-          if (!stopDown)
-            stopDown = handleDirectionCheck(selectedY + i, selectedX, false);
+          if (!stopUp) stopUp = doCoordinateCheck(selectedY - i, selectedX);
+          if (!stopDown) stopDown = doCoordinateCheck(selectedY + i, selectedX);
           if (!stopRight)
-            stopRight = handleDirectionCheck(selectedY, selectedX + i, false);
-          if (!stopLeft)
-            stopLeft = handleDirectionCheck(selectedY, selectedX - i, false);
+            stopRight = doCoordinateCheck(selectedY, selectedX + i);
+          if (!stopLeft) stopLeft = doCoordinateCheck(selectedY, selectedX - i);
           if (!stopUpRight)
-            stopUpRight = handleDirectionCheck(
-              selectedY - i,
-              selectedX + i,
-              false
-            );
+            stopUpRight = doCoordinateCheck(selectedY - i, selectedX + i);
           if (!stopUpLeft)
-            stopUpLeft = handleDirectionCheck(
-              selectedY - i,
-              selectedX - i,
-              false
-            );
+            stopUpLeft = doCoordinateCheck(selectedY - i, selectedX - i);
           if (!stopDownRight)
-            stopDownRight = handleDirectionCheck(
-              selectedY + i,
-              selectedX + i,
-              false
-            );
+            stopDownRight = doCoordinateCheck(selectedY + i, selectedX + i);
           if (!stopDownLeft)
-            stopDownLeft = handleDirectionCheck(
-              selectedY + i,
-              selectedX - i,
-              false
-            );
+            stopDownLeft = doCoordinateCheck(selectedY + i, selectedX - i);
         }
         break;
       }
@@ -260,23 +199,52 @@ function Game({
               x: selectedX - 2,
               condition: () =>
                 canCastle[turn].queen &&
-                !hasPiece(selectedY, selectedX - 1) &&
-                !hasPiece(selectedY, selectedX - 2) &&
-                !hasPiece(selectedY, selectedX - 3),
+                !getPiece({ board, y: selectedY, x: selectedX - 1 }) &&
+                !getPiece({ board, y: selectedY, x: selectedX - 2 }) &&
+                !getPiece({ board, y: selectedY, x: selectedX - 3 }) &&
+                !isInCheck({
+                  board,
+                  kingCoord: { y: selectedY, x: selectedX - 1 },
+                  kingColor: turn,
+                }) &&
+                !isInCheck({
+                  board,
+                  kingCoord: { y: selectedY, x: selectedX - 2 },
+                  kingColor: turn,
+                }) &&
+                !isInCheck({
+                  board,
+                  kingCoord: { y: selectedY, x: selectedX - 3 },
+                  kingColor: turn,
+                }),
             },
             {
               y: selectedY,
               x: selectedX + 2,
               condition: () =>
                 canCastle[turn].king &&
-                !hasPiece(selectedY, selectedX + 1) &&
-                !hasPiece(selectedY, selectedX + 2),
+                !getPiece({ board, y: selectedY, x: selectedX + 1 }) &&
+                !getPiece({ board, y: selectedY, x: selectedX + 2 }) &&
+                !isInCheck({
+                  board,
+                  kingCoord: { y: selectedY, x: selectedX + 1 },
+                  kingColor: turn,
+                }) &&
+                !isInCheck({
+                  board,
+                  kingCoord: { y: selectedY, x: selectedX + 2 },
+                  kingColor: turn,
+                }),
             },
           ]
-            .filter((c) => !isOutOfBounds(c.y, c.x))
+            // .filter((c) => !isOutOfBounds(c.y, c.x))
             .filter(({ y, x, condition }) => {
-              if (hasPiece(y, x, selectedPieceColor)) return false;
+              if (getPiece({ board, y, x, color: selectedPieceColor }))
+                return false;
               if (condition && !condition()) return false;
+
+              if (isInCheck({ board, kingCoord: { y, x }, kingColor: turn }))
+                return false;
 
               return true;
             })
@@ -290,7 +258,7 @@ function Game({
     if (selectedCoords) {
       if (
         (selectedCoords.x === x && selectedCoords.y === y) || //Same piece
-        (!hasPiece(y, x) &&
+        (!getPiece({ board, y, x }) &&
           !availableSquaresMoves.some(
             (coord) => coord.y === y && coord.x === x
           ))
@@ -307,12 +275,12 @@ function Game({
         return;
       }
 
-      if (hasPiece(y, x, turn)) {
+      if (getPiece({ board, y, x, color: turn })) {
         setSelectedCoords({ y, x });
         return;
       }
     } else {
-      if (!hasPiece(y, x, turn)) return;
+      if (!getPiece({ board, y, x, color: turn })) return;
       setSelectedCoords({ y, x });
     }
   };
@@ -322,7 +290,6 @@ function Game({
     const piece = board[selectedCoords.y]?.[selectedCoords.x];
 
     const newBoard = [...board];
-
     newBoard[coord.y]![coord.x] =
       newBoard[selectedCoords.y]?.[selectedCoords.x]; //Move piece
     newBoard[selectedCoords.y]![selectedCoords.x] = undefined; //Remove piece from old position
@@ -423,9 +390,6 @@ function Square({
 
 export default function Chess() {
   const [turn, setTurn] = useState<"white" | "black">("white");
-  const [selectedCoords, setSelectedCoords] = useState<
-    { x: number; y: number } | undefined
-  >();
 
   useEffect(() => {
     document.title = `Chess - ${turn}'s turn`;
@@ -438,15 +402,11 @@ export default function Chess() {
         <h1 className="text-5xl font-extrabold tracking-tight text-cyan-800 sm:text-[5rem]">
           Chess
         </h1>
-        <Game
-          turn={turn}
-          setTurn={setTurn}
-          selectedCoords={selectedCoords}
-          setSelectedCoords={setSelectedCoords}
-        />
+        <div className="rounded-md bg-stone-500 p-4">
+          <Game turn={turn} setTurn={setTurn} />
+        </div>
       </div>
       <div className="flex flex-col">
-        <p>{JSON.stringify(selectedCoords)}</p>
         <p>Cmosssn</p>
       </div>
     </div>

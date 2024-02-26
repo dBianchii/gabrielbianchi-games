@@ -11,72 +11,72 @@ import WhitePawn from "../../assets/pieces/white-pawn.svg";
 import WhiteQueen from "../../assets/pieces/white-queen.svg";
 import WhiteRook from "../../assets/pieces/white-rook.svg";
 
-const piecesIds = [
-  "P",
-  "R",
-  "N",
-  "B",
-  "Q",
-  "K",
-  "p",
-  "r",
-  "n",
-  "b",
-  "q",
-  "k",
-] as const;
+const pieceIds = {
+  P: "P",
+  R: "R",
+  N: "N",
+  B: "B",
+  Q: "Q",
+  K: "K",
+  p: "p",
+  r: "r",
+  n: "n",
+  b: "b",
+  q: "q",
+  k: "k",
+} as const;
 
 export type Piece = {
-  id: (typeof piecesIds)[number];
+  id: keyof typeof pieceIds;
   svg: React.ReactElement;
 };
 
-const scale = "1.5";
+const scale = "scale-[1.5]";
 export const P: Piece = {
-  id: "P",
-  svg: <WhitePawn className={`scale-[${scale}]`} />,
+  id: pieceIds.P,
+  svg: <WhitePawn className={`${scale}`} />,
 };
 export const R: Piece = {
-  id: "R",
-  svg: <WhiteRook className={`scale-[${scale}]`} />,
+  id: pieceIds.R,
+  svg: <WhiteRook className={`${scale}`} />,
 };
 export const N: Piece = {
-  id: "N",
-  svg: <WhiteKnight className={`scale-[${scale}]`} />,
+  id: pieceIds.N,
+  svg: <WhiteKnight className={`${scale}`} />,
 };
 export const B: Piece = {
-  id: "B",
-  svg: <WhiteBishop className={`scale-[${scale}]`} />,
+  id: pieceIds.B,
+  svg: <WhiteBishop className={`${scale}`} />,
 };
 export const Q: Piece = {
-  id: "Q",
-  svg: <WhiteQueen className={`scale-[${scale}]`} />,
+  id: pieceIds.Q,
+  svg: <WhiteQueen className={`${scale}`} />,
 };
 export const K: Piece = {
-  id: "K",
-  svg: <WhiteKing className={`scale-[${scale}]`} />,
+  id: pieceIds.K,
+  svg: <WhiteKing className={`${scale}`} />,
 };
 export const p: Piece = {
-  id: "p",
-  svg: <BlackPawn className={`scale-[${scale}]`} />,
+  id: pieceIds.p,
+  svg: <BlackPawn className={`${scale}`} />,
 };
 export const r: Piece = {
-  id: "r",
-  svg: <BlackRook className={`scale-[${scale}]`} />,
+  id: pieceIds.r,
+  svg: <BlackRook className={`${scale}`} />,
 };
 export const n: Piece = {
-  id: "n",
-  svg: <BlackKnight className={`scale-[${scale}]`} />,
+  id: pieceIds.n,
+  svg: <BlackKnight className={`${scale}`} />,
 };
 export const b: Piece = {
-  id: "b",
-  svg: <BlackBishop className={`scale-[${scale}]`} />,
+  id: pieceIds.b,
+  svg: <BlackBishop className={`${scale}`} />,
 };
 export const q: Piece = {
-  id: "q",
-  svg: <BlackQueen className={`scale-[${scale}]`} />,
+  id: pieceIds.q,
+  svg: <BlackQueen className={`${scale}`} />,
 };
 export const k: Piece = {
-  id: "k",
-  svg: <BlackKing className={`scale-[${scale}]`} />,
+  id: pieceIds.k,
+  svg: <BlackKing className={`${scale}`} />,
 };

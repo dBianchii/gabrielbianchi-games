@@ -10,6 +10,7 @@ function Game() {
   const [col6, setCol6] = useState<(string | null)[]>(nullArr);
   const [col7, setCol7] = useState<(string | null)[]>(nullArr);
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [board, setBoard] = useState<(string | null)[][]>([
     nullArr,
     nullArr,
