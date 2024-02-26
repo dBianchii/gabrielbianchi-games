@@ -402,7 +402,7 @@ export default function Chess() {
         <h1 className="text-5xl font-extrabold tracking-tight text-cyan-800 sm:text-[5rem]">
           Chess
         </h1>
-        <div className="rounded-md bg-stone-500 p-4">
+        <div className="scale-[0.6] rounded-md bg-stone-500 p-4 md:scale-[1]">
           <Game turn={turn} setTurn={setTurn} />
         </div>
       </div>
