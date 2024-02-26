@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import classNames from "classnames";
 import { useEffect, useState } from "react";
-import { initialBoard } from "./initialBoard";
-import { type Piece } from "./pieces";
-import { pieceColor, getPiece, isInCheck, otherColor } from "./utils";
+import { initialBoard } from "./_utils/initialBoard";
+import { type Piece } from "./_utils/pieces";
+import { pieceColor, getPiece, isInCheck, otherColor } from "./_utils/utils";
 
 function Game({
   turn,
@@ -329,7 +329,7 @@ function Game({
   };
 
   return (
-    <div className="flex flex-col">
+    <div className="flex scale-50 flex-col md:scale-100">
       {board.map((row, y) => (
         <div className="flex" key={y}>
           {row.map((piece, x) => (
@@ -402,12 +402,7 @@ export default function Chess() {
         <h1 className="text-5xl font-extrabold tracking-tight text-cyan-800 sm:text-[5rem]">
           Chess
         </h1>
-        <div className="scale-[0.6] rounded-md bg-stone-500 p-4 md:scale-[1]">
-          <Game turn={turn} setTurn={setTurn} />
-        </div>
-      </div>
-      <div className="flex flex-col">
-        <p>Cmosssn</p>
+        <Game turn={turn} setTurn={setTurn} />
       </div>
     </div>
   );
