@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { type Coord, type Board } from "./initialBoard";
+import { type Coord, type Board, type Color } from "./initialBoard";
 import { type Piece } from "./pieces";
 
 export const isOutOfBounds = (i: number, j: number) => {
@@ -9,14 +9,14 @@ export const isOutOfBounds = (i: number, j: number) => {
 export const pieceColor = (piece: Piece) =>
   piece.id === piece.id.toUpperCase() ? "white" : "black";
 
-export const otherColor = (color: "white" | "black") =>
+export const otherColor = (color: Color) =>
   color === "white" ? "black" : "white";
 
 export const getPiece = (opts: {
   board: Board;
   y: number;
   x: number;
-  color?: "white" | "black";
+  color?: Color;
   pieceIds?: Lowercase<Piece["id"]>[];
 }) => {
   const piece = opts.board[opts.y]?.[opts.x];
@@ -35,7 +35,7 @@ export const getPiece = (opts: {
   return piece;
 };
 
-export const getKingCoords = (board: Board, color: "white" | "black") => {
+export const getKingCoords = (board: Board, color: Color) => {
   for (let y = 0; y < board.length; y++) {
     for (let x = 0; x < board[y]!.length; x++) {
       const piece = board[y]![x];
@@ -53,7 +53,7 @@ export const isKingInCheck = ({
 }: {
   board: Board;
   kingCoord: Coord;
-  kingColor: "white" | "black";
+  kingColor: Color;
 }) => {
   const hasPiecesInDirection = ({
     direction,
@@ -63,7 +63,7 @@ export const isKingInCheck = ({
   }: {
     direction: { x: 0 | 1 | -1; y: 0 | 1 | -1 };
     pieceIds: Lowercase<Piece["id"]>[];
-    color: "white" | "black";
+    color: Color;
     radiusToCheck?: number;
   }) => {
     let ySrch = kingCoord.y + direction.y;

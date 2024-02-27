@@ -3,6 +3,7 @@ export type Board = (Piece | undefined)[][];
 const emptyRow = Array(8).fill(undefined) as Board[number];
 
 export type Coord = { y: number; x: number };
+export type Color = "white" | "black";
 
 export const initialBoard: Board = [
   [r, n, b, q, k, b, n, r],
