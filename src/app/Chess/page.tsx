@@ -2,9 +2,15 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import classNames from "classnames";
 import { useEffect, useState } from "react";
-import { initialBoard } from "./_utils/initialBoard";
+import { type Coord, initialBoard, type Board } from "./_utils/initialBoard";
 import { type Piece } from "./_utils/pieces";
-import { getPiece, isInCheck, otherColor, pieceColor } from "./_utils/utils";
+import {
+  getKingCoords,
+  getPiece,
+  isKingInCheck,
+  otherColor,
+  pieceColor,
+} from "./_utils/utils";
 
 function Game({
   turn,
@@ -23,6 +29,13 @@ function Game({
     { x: number; y: number } | undefined
   >();
 
+  const kingCoords = getKingCoords(board, turn);
+  const isInCheck = isKingInCheck({
+    board,
+    kingCoord: kingCoords,
+    kingColor: turn,
+  });
+
   const availableSquaresMoves: {
     y: number;
     x: number;
@@ -30,6 +43,11 @@ function Game({
   }[] = [];
   // Add logic to calculate available moves
   if (selectedCoords) {
+    const toAddAvailableSquareMoves: {
+      y: number;
+      x: number;
+      condition?: () => boolean;
+    }[] = [];
     const selectedPiece = board[selectedCoords.y]?.[selectedCoords.x];
     if (!selectedPiece)
       throw new Error("Selected piece is undefined but we have selectedCoords");
@@ -43,18 +61,18 @@ function Game({
       // if (isOutOfBounds(y, x)) return true;
       if (getPiece({ board, y, x })) {
         if (getPiece({ board, y, x, color: otherColor(selectedPieceColor) }))
-          availableSquaresMoves.push({ y, x }); //Capture
+          toAddAvailableSquareMoves.push({ y, x }); //Capture
         return true;
       }
 
-      availableSquaresMoves.push({ y, x });
+      toAddAvailableSquareMoves.push({ y, x });
       return false;
     };
 
     switch (selectedPiece.id.toLowerCase()) {
       case "p": {
         const u = selectedPieceColor === "white" ? -1 : 1; //?Up or down
-        availableSquaresMoves.push(
+        toAddAvailableSquareMoves.push(
           ...[
             {
               //Move forward
@@ -97,7 +115,6 @@ function Game({
                 }),
             },
           ].filter(({ condition }) => {
-            // if (isOutOfBounds(y, x)) return false;
             if (condition && !condition()) return false;
 
             return true;
@@ -136,7 +153,7 @@ function Game({
             ({ y, x }) => !getPiece({ board, y, x, color: selectedPieceColor })
           );
 
-        availableSquaresMoves.push(...possibleMoves);
+        toAddAvailableSquareMoves.push(...possibleMoves);
         break;
       }
       case "b": {
@@ -185,7 +202,7 @@ function Game({
         break;
       }
       case "k": {
-        availableSquaresMoves.push(
+        toAddAvailableSquareMoves.push(
           ...[
             { y: selectedY - 1, x: selectedX - 1 },
             { y: selectedY - 1, x: selectedX },
@@ -203,17 +220,17 @@ function Game({
                 !getPiece({ board, y: selectedY, x: selectedX - 1 }) &&
                 !getPiece({ board, y: selectedY, x: selectedX - 2 }) &&
                 !getPiece({ board, y: selectedY, x: selectedX - 3 }) &&
-                !isInCheck({
+                !isKingInCheck({
                   board,
                   kingCoord: { y: selectedY, x: selectedX - 1 },
                   kingColor: turn,
                 }) &&
-                !isInCheck({
+                !isKingInCheck({
                   board,
                   kingCoord: { y: selectedY, x: selectedX - 2 },
                   kingColor: turn,
                 }) &&
-                !isInCheck({
+                !isKingInCheck({
                   board,
                   kingCoord: { y: selectedY, x: selectedX - 3 },
                   kingColor: turn,
@@ -226,12 +243,12 @@ function Game({
                 canCastle[turn].king &&
                 !getPiece({ board, y: selectedY, x: selectedX + 1 }) &&
                 !getPiece({ board, y: selectedY, x: selectedX + 2 }) &&
-                !isInCheck({
+                !isKingInCheck({
                   board,
                   kingCoord: { y: selectedY, x: selectedX + 1 },
                   kingColor: turn,
                 }) &&
-                !isInCheck({
+                !isKingInCheck({
                   board,
                   kingCoord: { y: selectedY, x: selectedX + 2 },
                   kingColor: turn,
@@ -244,7 +261,13 @@ function Game({
                 return false;
               if (condition && !condition()) return false;
 
-              if (isInCheck({ board, kingCoord: { y, x }, kingColor: turn }))
+              if (
+                isKingInCheck({
+                  board,
+                  kingCoord: { y, x },
+                  kingColor: turn,
+                })
+              )
                 return false;
 
               return true;
@@ -253,6 +276,24 @@ function Game({
         break;
       }
     }
+
+    availableSquaresMoves.push(
+      ...toAddAvailableSquareMoves.filter(({ y, x }: Coord) => {
+        const previewBoard = doMove({
+          coord: { y, x },
+          preview: true,
+        });
+        if (
+          isKingInCheck({
+            board: previewBoard,
+            kingCoord: kingCoords,
+            kingColor: turn,
+          })
+        )
+          return false;
+        return true;
+      })
+    );
   }
 
   const handleSelectSquare = ({ y, x }: { y: number; x: number }) => {
@@ -271,35 +312,42 @@ function Game({
       if (
         availableSquaresMoves.some((coord) => coord.y === y && coord.x === x)
       ) {
-        doMove({ y, x });
+        doMove({ coord: { y, x } });
         setSelectedCoords(undefined);
         return;
       }
 
-      if (getPiece({ board, y, x, color: turn })) {
-        setSelectedCoords({ y, x });
-        return;
-      }
+      const piece = getPiece({ board, y, x, color: turn });
+      if (!piece) return;
+      if (isInCheck && piece.id.toLowerCase() !== "k")
+        return setSelectedCoords(undefined);
+
+      setSelectedCoords({ y, x });
     } else {
-      if (!getPiece({ board, y, x, color: turn })) return;
+      const piece = getPiece({ board, y, x, color: turn });
+      if (!piece) return;
+      if (isInCheck && piece.id.toLowerCase() !== "k") return;
       setSelectedCoords({ y, x });
     }
   };
 
-  const doMove = (coord: { y: number; x: number }) => {
+  function doMove({ coord, preview }: { coord: Coord; preview?: boolean }) {
     if (!selectedCoords) throw new Error("Unreachable");
     const piece = board[selectedCoords.y]?.[selectedCoords.x];
 
-    const newBoard = [...board];
+    const newBoard = board.map((row) => row.slice());
+
     newBoard[coord.y]![coord.x] =
       newBoard[selectedCoords.y]?.[selectedCoords.x]; //Move piece
     newBoard[selectedCoords.y]![selectedCoords.x] = undefined; //Remove piece from old position
 
     if (piece?.id.toLowerCase() === "k") {
-      setCanCastle((prev) => ({
-        ...prev,
-        [turn]: { king: false, queen: false },
-      })); //Disable castling when king moves
+      if ((canCastle[turn].queen || canCastle[turn].king) && !preview)
+        setCanCastle((prev) => ({
+          ...prev,
+          [turn]: { king: false, queen: false },
+        })); //Disable castling when king moves
+
       if (coord.x === selectedCoords.x - 2) {
         //Queen side castle
         newBoard[coord.y]![coord.x + 1] = newBoard[coord.y]![0]; //Move rook
@@ -312,7 +360,7 @@ function Game({
       }
     }
 
-    if (piece?.id.toLowerCase() === "r") {
+    if (piece?.id.toLowerCase() === "r" && !preview) {
       if (selectedCoords.x === 0 && canCastle[turn].queen)
         setCanCastle((prev) => ({
           ...prev,
@@ -324,10 +372,11 @@ function Game({
           [turn]: { ...prev[turn], king: false },
         }));
     }
-
+    if (preview) return newBoard;
     setBoard(newBoard);
     setTurn(otherColor(turn));
-  };
+    return newBoard;
+  }
 
   return (
     <div className="flex scale-50 flex-col md:scale-100">
@@ -335,6 +384,9 @@ function Game({
         <div className="flex" key={y}>
           {row.map((piece, x) => (
             <Square
+              highlightRedSquare={
+                isInCheck && kingCoords.y === y && kingCoords.x === x
+              }
               availableMove={availableSquaresMoves.some(
                 (coord) => coord.y === y && coord.x === x
               )}
@@ -363,6 +415,7 @@ function Square({
   highlighted,
   handleSelectPiece,
   availableMove,
+  highlightRedSquare,
 }: {
   y: number;
   x: number;
@@ -370,6 +423,7 @@ function Square({
   handleSelectPiece: (args: { y: number; x: number }) => void;
   highlighted?: boolean;
   availableMove: boolean;
+  highlightRedSquare: boolean;
 }) {
   return (
     <div
@@ -381,6 +435,7 @@ function Square({
           "bg-[#91602E]": (y + x) % 2 === 1 && !highlighted,
           "bg-yellow-500": highlighted,
           "bg-yellow-200": availableMove,
+          "bg-red-500": highlightRedSquare,
         }
       )}
     >

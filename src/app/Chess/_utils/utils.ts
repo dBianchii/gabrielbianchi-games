@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { type Coord, type Board } from "./initialBoard";
 import { type Piece } from "./pieces";
 
@@ -34,7 +35,18 @@ export const getPiece = (opts: {
   return piece;
 };
 
-export const isInCheck = ({
+export const getKingCoords = (board: Board, color: "white" | "black") => {
+  for (let y = 0; y < board.length; y++) {
+    for (let x = 0; x < board[y]!.length; x++) {
+      const piece = board[y]![x];
+      if (piece?.id.toLowerCase() === "k" && pieceColor(piece) === color)
+        return { y, x };
+    }
+  }
+  throw new Error("King not found");
+};
+
+export const isKingInCheck = ({
   board,
   kingCoord,
   kingColor,
@@ -149,4 +161,25 @@ export const isInCheck = ({
       return true;
     }
   }
+
+  const coordsToCheckForKing: Coord[] = [
+    { y: kingCoord.y - 1, x: kingCoord.x - 1 },
+    { y: kingCoord.y - 1, x: kingCoord.x },
+    { y: kingCoord.y - 1, x: kingCoord.x + 1 },
+    { y: kingCoord.y, x: kingCoord.x - 1 },
+    { y: kingCoord.y, x: kingCoord.x + 1 },
+    { y: kingCoord.y + 1, x: kingCoord.x - 1 },
+    { y: kingCoord.y + 1, x: kingCoord.x },
+    { y: kingCoord.y + 1, x: kingCoord.x + 1 },
+  ];
+  for (const coord of coordsToCheckForKing) {
+    const piece = getPiece({ y: coord.y, x: coord.x, board: board });
+    if (
+      piece?.id.toLowerCase() === "k" &&
+      pieceColor(piece) === otherColor(kingColor)
+    ) {
+      return true;
+    }
+  }
+  return false;
 };
