@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 function Game() {
   const nullArr = [null, null, null, null, null, null];

@@ -1,9 +1,10 @@
+"use client";
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import classNames from "classnames";
 import { useEffect, useState } from "react";
 import { initialBoard } from "./_utils/initialBoard";
 import { type Piece } from "./_utils/pieces";
-import { pieceColor, getPiece, isInCheck, otherColor } from "./_utils/utils";
+import { getPiece, isInCheck, otherColor, pieceColor } from "./_utils/utils";
 
 function Game({
   turn,
@@ -397,7 +398,7 @@ export default function Chess() {
   }, [turn]);
 
   return (
-    <div className="flex">
+    <div className="flex justify-center">
       <div className="flex flex-col">
         <h1 className="text-5xl font-extrabold tracking-tight text-cyan-800 sm:text-[5rem]">
           Chess
