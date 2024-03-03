@@ -1,8 +1,13 @@
 "use client";
-import { LiveList } from "@liveblocks/client";
+import { LiveList, LiveObject } from "@liveblocks/client";
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import classNames from "classnames";
-import { useMutation, useStorage } from "liveblocks.config";
+import {
+  useMutation,
+  useMyPresence,
+  useOthers,
+  useStorage,
+} from "liveblocks.config";
 import { useEffect, useState } from "react";
 import {
   convertToBoard,
@@ -22,7 +27,18 @@ import {
 } from "./_utils/utils";
 
 export function Game() {
-  const [turn, setTurn] = useState<Color>("white");
+  const turn = useStorage((storage) => storage.turn).color;
+  const setTurn = useMutation(({ storage }, newTurn: Color) => {
+    storage.get("turn").set("color", newTurn);
+  }, []);
+
+  const [presence, setMyPresence] = useMyPresence();
+  const others = useOthers();
+  if (others.length > 1) throw new Error("Too many players");
+  if (others[0] && others[0].presence.color === presence.color) {
+    setMyPresence({ color: otherColor(others[0].presence.color) });
+  }
+
   const board = useStorage((storage) => storage.board);
   const setBoard = useMutation(({ storage }, newboard: Board) => {
     const oldBoard = storage.get("board");
@@ -35,10 +51,28 @@ export function Game() {
     oldBoard.set(6, new LiveList(newboard[6]));
     oldBoard.set(7, new LiveList(newboard[7]));
   }, []);
-  const [canCastle, setCanCastle] = useState({
-    white: { king: true, queen: true },
-    black: { king: true, queen: true },
-  });
+
+  const canCastle = useStorage((storage) => storage.canCastle);
+  const setCanCastle = useMutation(
+    (
+      { storage },
+      newCanCastle: {
+        white: { king: boolean; queen: boolean };
+        black: { king: boolean; queen: boolean };
+      }
+    ) => {
+      const oldCanCastle = storage.get("canCastle");
+      oldCanCastle.set(
+        "white",
+        new LiveObject({
+          king: newCanCastle.white.king,
+          queen: newCanCastle.white.queen,
+        })
+      );
+    },
+    []
+  );
+
   const [selectedCoord, setSelectedCoord] = useState<
     { x: number; y: number } | undefined
   >();
@@ -130,6 +164,7 @@ export function Game() {
 
       setSelectedCoord({ y, x });
     } else {
+      if (presence.color !== turn) return;
       const piece = getPiece({ board: board as Board, y, x, color: turn });
       if (!piece) return;
       setSelectedCoord({ y, x });
@@ -154,10 +189,7 @@ export function Game() {
 
     if (piece?.id.toLowerCase() === "k") {
       if ((canCastle[turn].queen || canCastle[turn].king) && !preview)
-        setCanCastle((prev) => ({
-          ...prev,
-          [turn]: { king: false, queen: false },
-        })); //Disable castling when king moves
+        setCanCastle({ ...canCastle, [turn]: { king: false, queen: false } });
 
       if (coord.x === selectedCoord.x - 2) {
         //Queen side castle
@@ -173,15 +205,16 @@ export function Game() {
 
     if (piece?.id.toLowerCase() === "r" && !preview) {
       if (selectedCoord.x === 0 && canCastle[turn].queen)
-        setCanCastle((prev) => ({
-          ...prev,
-          [turn]: { ...prev[turn], queen: false },
-        }));
+        setCanCastle({
+          ...canCastle,
+          [turn]: { ...canCastle[turn], queen: false },
+        });
+
       if (selectedCoord.x === 7 && canCastle[turn].king)
-        setCanCastle((prev) => ({
-          ...prev,
-          [turn]: { ...prev[turn], king: false },
-        }));
+        setCanCastle({
+          ...canCastle,
+          [turn]: { ...canCastle[turn], king: false },
+        });
     }
 
     if (preview) return newBoard;
@@ -193,13 +226,14 @@ export function Game() {
 
   return (
     <>
-      <button
-        onClick={() => reset()}
-        className="m-4 h-8 w-24 rounded-full bg-red-600 text-white"
-      >
-        Reset
-      </button>
       <div className="flex scale-50 flex-col md:scale-100">
+        <button
+          onClick={() => reset()}
+          className="m-4 h-8 w-24 rounded-full bg-red-600 text-white"
+        >
+          Reset
+        </button>
+        <p>You are {presence.color}</p>
         {board.map((row, y) => (
           <div className="flex" key={y}>
             {row.map((piece, x) => (
