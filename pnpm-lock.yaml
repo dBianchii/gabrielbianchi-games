@@ -5,6 +5,12 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@liveblocks/client':
+    specifier: ^1.10.0
+    version: 1.10.0
+  '@liveblocks/react':
+    specifier: ^1.10.0
+    version: 1.10.0(react@18.2.0)
   classnames:
     specifier: ^2.3.2
     version: 2.5.1
@@ -1464,6 +1470,28 @@ packages:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.4.15
+
+  /@liveblocks/client@1.10.0:
+    resolution: {integrity: sha512-UL32qEgjYdUaQbTBnMAegab4umVRQYFJEBccVW94hDc2wwxdf0rIcqZTvZOX2vqmWXWhKiIiWo1Pu8rCTorFfg==}
+    dependencies:
+      '@liveblocks/core': 1.10.0
+    dev: false
+
+  /@liveblocks/core@1.10.0:
+    resolution: {integrity: sha512-FwIHCITs34GrsjEx9gty+4KQQ89IDjKoivuuqDio0oSoZeZn2z5QxOfX6T2E189HDrviTp2998vtz7kKQLCPiA==}
+    dev: false
+
+  /@liveblocks/react@1.10.0(react@18.2.0):
+    resolution: {integrity: sha512-SASkpQFeeHtD3QG+4sCZ9v4ofVyhZB3EE1jYTSzvnVMaoxThyOlxt5FRzRa/XZRpjihbQOpI6vLdiZGZDBgVJw==}
+    peerDependencies:
+      react: ^16.14.0 || ^17 || ^18
+    dependencies:
+      '@liveblocks/client': 1.10.0
+      '@liveblocks/core': 1.10.0
+      nanoid: 3.3.7
+      react: 18.2.0
+      use-sync-external-store: 1.2.0(react@18.2.0)
+    dev: false
 
   /@next/env@14.1.0:
     resolution: {integrity: sha512-Py8zIo+02ht82brwwhTg36iogzFqGLPXlRGKQw5s+qP/kMNc4MAyDeEwBKDijk6zTIbegEgu8Qy7C1LboslQAw==}
@@ -4721,6 +4749,14 @@ packages:
     dependencies:
       punycode: 2.3.1
     dev: true
+
+  /use-sync-external-store@1.2.0(react@18.2.0):
+    resolution: {integrity: sha512-eEgnFxGQ1Ife9bzYs6VLi8/4X6CObHMw9Qr9tPY43iKwsPw8xE8+EFsf/2cFZ5S3esXgpWgtSCtLNS41F+sKPA==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      react: 18.2.0
+    dev: false
 
   /util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}

@@ -1,6 +1,7 @@
 "use client";
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import classNames from "classnames";
+import { useOthers } from "liveblocks.config";
 import { useEffect, useState } from "react";
 import {
   initialBoard,
@@ -19,6 +20,7 @@ import {
 } from "./_utils/utils";
 
 export function Game() {
+  const others = useOthers();
   const [turn, setTurn] = useState<Color>("white");
 
   useEffect(() => {

@@ -1,3 +1,4 @@
+import { Room } from "../room";
 import { Game } from "./_components/board";
 
 export default function Chess() {
@@ -7,7 +8,9 @@ export default function Chess() {
         <h1 className="text-5xl font-extrabold tracking-tight text-cyan-800 sm:text-[5rem]">
           Chess
         </h1>
-        <Game />
+        <Room>
+          <Game />
+        </Room>
       </div>
     </div>
   );
