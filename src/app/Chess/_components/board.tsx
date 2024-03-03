@@ -23,11 +23,6 @@ import {
 
 export function Game() {
   const [turn, setTurn] = useState<Color>("white");
-
-  useEffect(() => {
-    document.title = `Chess - ${turn}'s turn`;
-    //play audio
-  }, [turn]);
   const board = useStorage((storage) => storage.board);
   const setBoard = useMutation(({ storage }, newboard: Board) => {
     const oldBoard = storage.get("board");
@@ -40,8 +35,6 @@ export function Game() {
     oldBoard.set(6, new LiveList(newboard[6]));
     oldBoard.set(7, new LiveList(newboard[7]));
   }, []);
-  const reset = () => setBoard(convertToBoard(initialBoard));
-
   const [canCastle, setCanCastle] = useState({
     white: { king: true, queen: true },
     black: { king: true, queen: true },
@@ -49,6 +42,21 @@ export function Game() {
   const [selectedCoord, setSelectedCoord] = useState<
     { x: number; y: number } | undefined
   >();
+
+  useEffect(() => {
+    document.title = `Chess - ${turn}'s turn`;
+    //play audio
+  }, [turn]);
+
+  const reset = () => {
+    setBoard(convertToBoard(initialBoard));
+    setCanCastle({
+      white: { king: true, queen: true },
+      black: { king: true, queen: true },
+    });
+    setSelectedCoord(undefined);
+    setTurn("white");
+  };
 
   const kingCoords = getKingCoords(board as Board, turn);
   const isInCheck = isKingInCheck({

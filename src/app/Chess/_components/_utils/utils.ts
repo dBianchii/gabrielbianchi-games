@@ -36,7 +36,6 @@ export const getPiece = (opts: {
 };
 
 export const getKingCoords = (board: Board, color: Color) => {
-  console.log(board);
   for (let y = 0; y < board.length; y++) {
     for (let x = 0; x < board[y]!.length; x++) {
       const piece = board[y]![x];

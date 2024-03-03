@@ -16,8 +16,6 @@ export const initialBoard: LiveList<LiveList<Piece | null>> = new LiveList([
   new LiveList([R, N, B, Q, K, B, N, R]),
 ]);
 
-export const convertToBoard = (
-  liveBoard: LiveList<LiveList<Piece | null>>
-): Board => {
+export const convertToBoard = (liveBoard: LiveList<LiveList<Piece | null>>) => {
   return liveBoard.map((row) => row.toArray());
 };
