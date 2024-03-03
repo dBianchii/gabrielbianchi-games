@@ -1,16 +1,18 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @next/next/no-img-element */
 "use client";
-import { useState, useMemo } from "react";
+import { LiveList, LiveObject } from "@liveblocks/client";
+import "@liveblocks/react";
+import { ClientSideSuspense } from "@liveblocks/react";
+import { useState } from "react";
 import {
   RoomProvider,
-  useOthers,
-  useUpdateMyPresence,
-  useStorage,
   useMutation,
+  useOthers,
+  useStorage,
+  useUpdateMyPresence,
 } from "../../../liveblocks.config";
-import "@liveblocks/react";
-import { LiveList, LiveObject } from "@liveblocks/client";
-import { useRouter } from "next/router";
-import { ClientSideSuspense } from "@liveblocks/react";
 import { Room } from "../room";
 
 function WhoIsHere() {
