@@ -6,7 +6,7 @@ import { type ReactNode } from "react";
 
 export function Room({ children }: { children: ReactNode }) {
   return (
-    <RoomProvider id="my-room" initialPresence={{}}>
+    <RoomProvider id="my-room" initialPresence={{ isTyping: false }}>
       <ClientSideSuspense fallback={<div>Loading…</div>}>
         {() => children}
       </ClientSideSuspense>
