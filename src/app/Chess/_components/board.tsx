@@ -13,7 +13,7 @@ import {
 } from "./_utils/initialBoard";
 import { PieceSVG, type Piece } from "./_utils/pieces";
 import {
-  areThereAvailableMoves as hasAvailableMoves,
+  areThereAvailableMoves,
   getAvailableMoves,
   getKingCoords,
   getPiece,
@@ -65,7 +65,15 @@ export function Game() {
     kingColor: turn,
   });
 
-  if (!hasAvailableMoves({ board: board as Board, turn, canCastle, doMove }))
+  if (
+    !areThereAvailableMoves({
+      board: board as Board,
+      turn,
+      canCastle,
+      doMove,
+      kingCoords,
+    })
+  )
     if (isInCheck) {
       alert("Checkmate");
     } else {

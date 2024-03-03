@@ -87,6 +87,7 @@ export const areThereAvailableMoves = ({
   turn,
   doMove,
   canCastle,
+  kingCoords,
 }: {
   board: Board;
   turn: Color;
@@ -105,6 +106,7 @@ export const areThereAvailableMoves = ({
       queen: boolean;
     };
   };
+  kingCoords: Coord;
 }) => {
   const piecesCoordsForTurn: Coord[] = [];
   for (let y = 0; y < board.length; y++) {
@@ -117,7 +119,7 @@ export const areThereAvailableMoves = ({
   for (const pieceCoord of piecesCoordsForTurn) {
     const availableMoves = getAvailableMoves({
       board,
-      kingCoords: getKingCoords(board, turn),
+      kingCoords,
       turn,
       selectedCoord: pieceCoord,
       canCastle,
