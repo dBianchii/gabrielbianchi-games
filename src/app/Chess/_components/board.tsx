@@ -114,12 +114,12 @@ export function Game() {
     preview?: boolean;
     selectedCoord: Coord;
   }) {
-    const piece = board[selectedCoord.y]?.[selectedCoord.x];
+    const piece = board[selectedCoord.y]![selectedCoord.x]!;
 
     const newBoard = JSON.parse(JSON.stringify(board)) as Board;
 
-    newBoard[coord.y]![coord.x] = newBoard[selectedCoord.y]?.[selectedCoord.x]; //Move piece
-    newBoard[selectedCoord.y]![selectedCoord.x] = undefined; //Remove piece from old position
+    newBoard[coord.y]![coord.x] = newBoard[selectedCoord.y]![selectedCoord.x]!; //Move piece
+    newBoard[selectedCoord.y]![selectedCoord.x] = null; //Remove piece from old position
 
     if (piece?.id.toLowerCase() === "k") {
       if ((canCastle[turn].queen || canCastle[turn].king) && !preview)
@@ -130,13 +130,13 @@ export function Game() {
 
       if (coord.x === selectedCoord.x - 2) {
         //Queen side castle
-        newBoard[coord.y]![coord.x + 1] = newBoard[coord.y]![0]; //Move rook
-        newBoard[coord.y]![0] = undefined; //Remove rook from old position
+        newBoard[coord.y]![coord.x + 1] = newBoard[coord.y]![0]!; //Move rook
+        newBoard[coord.y]![0] = null; //Remove rook from old position
       }
       if (coord.x === selectedCoord.x + 2) {
         //King side castle
-        newBoard[coord.y]![coord.x - 1] = newBoard[coord.y]![7]; //Move rook
-        newBoard[coord.y]![7] = undefined; //Remove rook from old position
+        newBoard[coord.y]![coord.x - 1] = newBoard[coord.y]![7]!; //Move rook
+        newBoard[coord.y]![7] = null; //Remove rook from old position
       }
     }
 
@@ -199,7 +199,7 @@ function Square({
 }: {
   y: number;
   x: number;
-  piece: Piece | undefined;
+  piece: Piece | null;
   handleSelectPiece: (args: { y: number; x: number }) => void;
   highlighted?: boolean;
   availableMove: boolean;

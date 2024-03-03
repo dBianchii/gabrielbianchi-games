@@ -1,6 +1,6 @@
 import { b, B, k, K, n, N, p, P, q, Q, r, R, type Piece } from "./pieces";
-export type Board = (Piece | undefined)[][];
-const emptyRow = Array(8).fill(undefined) as Board[number];
+export type Board = (Piece | null)[][];
+const emptyRow = Array(8).fill(null) as Board[number];
 
 export type Coord = { y: number; x: number };
 export type Color = "white" | "black";
