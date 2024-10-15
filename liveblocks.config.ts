@@ -6,7 +6,7 @@ import {
 import { createRoomContext } from "@liveblocks/react";
 import { type Color } from "~/app/Chess/_components/_utils/initialBoard";
 import { type Piece } from "~/app/Chess/_components/_utils/pieces";
-import { env } from "~/env.mjs";
+import { env } from "~/env";
 
 const client = createClient({
   publicApiKey: env.NEXT_PUBLIC_LIVEBLOCKS_API_KEY,
