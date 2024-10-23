@@ -1,7 +1,6 @@
-import { type NextPage } from "next";
 import Link from "next/link";
 import { DiReact } from "react-icons/di";
-const Home: NextPage = () => {
+export default function HomePage() {
   const games = [
     {
       title: "Connect 4",
@@ -44,6 +43,4 @@ const Home: NextPage = () => {
       </div>
     </>
   );
-};
-
-export default Home;
+}

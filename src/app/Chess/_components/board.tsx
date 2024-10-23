@@ -3,7 +3,7 @@
 import classNames from "classnames";
 import { useMyPresence, useOthers } from "liveblocks.config";
 import { type Board } from "./_utils/initial-game-state";
-import { PieceSVG, type Piece } from "./_utils/pieces";
+import { PieceIMG, type Piece } from "./_utils/pieces";
 import { useIsCurrentTurnKingInCheck, useKingCoords } from "./_utils/utils";
 import {
   useBoard,
@@ -129,7 +129,7 @@ function Square({
         }
       )}
     >
-      {piece && <PieceSVG pieceId={piece?.id} />}
+      {piece && <PieceIMG pieceId={piece?.id} />}
     </div>
   );
 }
