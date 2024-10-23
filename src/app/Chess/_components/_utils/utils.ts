@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { type Coord, type Board, type Color } from "./initialBoard";
+import { useBoard, useCastling, useSquares, useTurn } from "../chess-hooks";
+import { type Coord, type Board, type Color } from "./initial-game-state";
 import { type Piece } from "./pieces";
 
 export const isOutOfBounds = (i: number, j: number) => {
@@ -33,17 +34,6 @@ export const getPiece = (opts: {
       return;
 
   return piece;
-};
-
-export const getKingCoords = (board: Board, color: Color) => {
-  for (let y = 0; y < board.length; y++) {
-    for (let x = 0; x < board[y]!.length; x++) {
-      const piece = board[y]![x];
-      if (piece?.id.toLowerCase() === "k" && pieceColor(piece) === color)
-        return { y, x };
-    }
-  }
-  throw new Error("King not found");
 };
 
 const hasPiecesInDirection = ({
@@ -82,43 +72,24 @@ const hasPiecesInDirection = ({
   }
 };
 
-export const areThereAvailableMoves = ({
-  board,
-  turn,
-  doMove,
-  canCastle,
-  kingCoords,
-}: {
-  board: Board;
-  turn: Color;
-  doMove: (opts: {
-    coord: Coord;
-    preview?: boolean;
-    selectedCoord: Coord;
-  }) => Board;
-  canCastle: {
-    white: {
-      king: boolean;
-      queen: boolean;
-    };
-    black: {
-      king: boolean;
-      queen: boolean;
-    };
-  };
-  kingCoords: Coord;
-}) => {
+export const useAreThereAvailableMoves = () => {
+  const { board } = useBoard();
+  const { turn } = useTurn();
+  const { canCastle } = useCastling();
+  const kingCoords = useKingCoords(turn);
+  const { doMove } = useSquares();
+
   const piecesCoordsForTurn: Coord[] = [];
   for (let y = 0; y < board.length; y++) {
     for (let x = 0; x < board[y]!.length; x++) {
-      const piece = getPiece({ board, y, x, color: turn });
+      const piece = getPiece({ board: board as Board, y, x, color: turn });
       if (piece) piecesCoordsForTurn.push({ y, x });
     }
   }
 
   for (const pieceCoord of piecesCoordsForTurn) {
     const availableMoves = getAvailableMoves({
-      board,
+      board: board as Board,
       kingCoords,
       turn,
       selectedCoord: pieceCoord,
@@ -128,6 +99,30 @@ export const areThereAvailableMoves = ({
     if (availableMoves.length > 0) return true;
   }
   return false;
+};
+
+export const useKingCoords = (color: Color) => {
+  const { board } = useBoard();
+  for (let y = 0; y < board.length; y++)
+    for (let x = 0; x < board[y]!.length; x++) {
+      const piece = board[y]![x];
+      if (piece?.id.toLowerCase() === "k" && pieceColor(piece) === color)
+        return { y, x };
+    }
+
+  throw new Error("King not found");
+};
+
+export const useIsCurrentTurnKingInCheck = () => {
+  const { board } = useBoard();
+  const { turn } = useTurn();
+  const kingCoords = useKingCoords(turn);
+
+  return isKingInCheck({
+    board: board as Board,
+    kingCoord: kingCoords,
+    kingColor: turn,
+  });
 };
 
 export const isKingInCheck = ({

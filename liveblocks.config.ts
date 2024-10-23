@@ -4,7 +4,7 @@ import {
   type LiveList,
 } from "@liveblocks/client";
 import { createRoomContext } from "@liveblocks/react";
-import { type Color } from "~/app/Chess/_components/_utils/initialBoard";
+import { type Color } from "~/app/Chess/_components/_utils/initial-game-state";
 import { type Piece } from "~/app/Chess/_components/_utils/pieces";
 import { env } from "~/env";
 
@@ -16,7 +16,7 @@ const client = createClient({
 // and that will automatically be kept in sync. Accessible through the
 // `user.presence` property. Must be JSON-serializable.
 type Presence = {
-  color: "white" | "black";
+  color: "white" | "black" | null;
 };
 
 // Optionally, Storage represents the shared document that persists in the

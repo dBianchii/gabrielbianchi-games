@@ -1,10 +1,13 @@
 "use client";
 
-import { LiveObject } from "@liveblocks/client";
 import { ClientSideSuspense } from "@liveblocks/react";
 import { RoomProvider } from "liveblocks.config";
 import { type ReactNode } from "react";
-import { initialBoard } from "./Chess/_components/_utils/initialBoard";
+import {
+  initialBoard,
+  initialCastling,
+  initialTurn,
+} from "./Chess/_components/_utils/initial-game-state";
 
 export function Room({ children }: { children: ReactNode }) {
   return (
@@ -12,13 +15,10 @@ export function Room({ children }: { children: ReactNode }) {
       id="anotherRoom"
       initialStorage={{
         board: initialBoard,
-        turn: new LiveObject({ color: "white" }),
-        canCastle: new LiveObject({
-          white: new LiveObject({ king: true, queen: true }),
-          black: new LiveObject({ king: true, queen: true }),
-        }),
+        turn: initialTurn,
+        canCastle: initialCastling,
       }}
-      initialPresence={{ color: "white" }}
+      initialPresence={{ color: null }}
     >
       <ClientSideSuspense fallback={<div>Chess is loading...</div>}>
         {() => children}
