@@ -1,0 +1,1 @@
+ALTER TABLE "gb-games_gameRoom" ADD COLUMN "completed" boolean;

@@ -1,5 +1,14 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { DiReact } from "react-icons/di";
+import { db } from "~/server/db";
+
+async function Test() {
+  await db.query.accounts.findMany();
+
+  return <div></div>;
+}
+
 export default function HomePage() {
   const games = [
     {
@@ -16,6 +25,9 @@ export default function HomePage() {
   return (
     <>
       <div className="container flex flex-col items-center justify-center gap-12 px-2 py-16 ">
+        <Suspense>
+          <Test />
+        </Suspense>
         <h1 className="text-3xl font-extrabold tracking-tight text-purple-800 sm:text-[5rem]">
           Hi!
         </h1>

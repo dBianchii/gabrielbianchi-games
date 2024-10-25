@@ -9,6 +9,7 @@ import {
   type Color,
   type Coord,
 } from "./_utils/initial-game-state";
+import { type Piece } from "./_utils/pieces";
 import {
   getAvailableMoves,
   getPiece,
@@ -54,7 +55,7 @@ export const useSquares = () => {
     preview?: boolean;
     selectedCoord: Coord;
   }) {
-    const piece = board[selectedCoord.y]![selectedCoord.x]!;
+    const piece = board[selectedCoord.y]![selectedCoord.x]! as Piece;
 
     const newBoard = JSON.parse(JSON.stringify(board)) as Board;
 
@@ -108,7 +109,7 @@ export const useSquares = () => {
     condition?: () => boolean;
   }[] = [];
   if (selectedCoord) {
-    const selectedPiece = board[selectedCoord.y]?.[selectedCoord.x];
+    const selectedPiece = board[selectedCoord.y]?.[selectedCoord.x] as Piece;
     if (!selectedPiece)
       throw new Error("Selected piece is undefined but we have selectedCoords");
 
@@ -169,14 +170,14 @@ export const useBoard = () => {
   const board = useStorage((storage) => storage.board);
   const setBoard = useMutation(({ storage }, newboard: Board) => {
     const oldBoard = storage.get("board");
-    oldBoard.set(0, new LiveList(newboard[0]));
-    oldBoard.set(1, new LiveList(newboard[1]));
-    oldBoard.set(2, new LiveList(newboard[2]));
-    oldBoard.set(3, new LiveList(newboard[3]));
-    oldBoard.set(4, new LiveList(newboard[4]));
-    oldBoard.set(5, new LiveList(newboard[5]));
-    oldBoard.set(6, new LiveList(newboard[6]));
-    oldBoard.set(7, new LiveList(newboard[7]));
+    oldBoard.set(0, new LiveList(newboard[0] as Piece[]));
+    oldBoard.set(1, new LiveList(newboard[1] as Piece[]));
+    oldBoard.set(2, new LiveList(newboard[2] as Piece[]));
+    oldBoard.set(3, new LiveList(newboard[3] as Piece[]));
+    oldBoard.set(4, new LiveList(newboard[4] as Piece[]));
+    oldBoard.set(5, new LiveList(newboard[5] as Piece[]));
+    oldBoard.set(6, new LiveList(newboard[6] as Piece[]));
+    oldBoard.set(7, new LiveList(newboard[7] as Piece[]));
   }, []);
   const resetBoard = () => setBoard(convertToBoard(initialBoard));
 

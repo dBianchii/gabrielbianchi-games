@@ -7,15 +7,10 @@ await createJiti(fileURLToPath(import.meta.url)).import("./src/env");
 const config = {
   reactStrictMode: true,
 
-  eslint: { ignoreDuringBuilds: true },
-
-  webpack(config) {
-    config.module.rules.push({
-      test: /\.svg$/i,
-      issuer: /\.[jt]sx?$/,
-      use: ["@svgr/webpack"],
-    });
-    return config;
+  experimental: {
+    reactCompiler: true,
   },
+
+  eslint: { ignoreDuringBuilds: true },
 };
 export default config;

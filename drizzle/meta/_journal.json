@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1729737215406,
+      "tag": "0000_left_synch",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1729737317736,
+      "tag": "0001_little_oracle",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1729827159795,
+      "tag": "0002_wakeful_nekra",
+      "breakpoints": true
+    }
+  ]
+}

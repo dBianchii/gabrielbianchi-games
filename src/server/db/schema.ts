@@ -1,5 +1,6 @@
 import {
   boolean,
+  index,
   integer,
   pgTableCreator,
   primaryKey,
@@ -88,5 +89,22 @@ export const authenticators = createTable(
     compositePK: primaryKey({
       columns: [authenticator.userId, authenticator.credentialID],
     }),
+  })
+);
+
+export const gameRooms = createTable(
+  "gameRoom",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    gameType: text("gameType").notNull(),
+    player1: text("player1").notNull(),
+    player2: text("player2"),
+    completed: boolean("completed").$defaultFn(() => false),
+  },
+  (table) => ({
+    gameTypeIdx: index("gameType_idx").on(table.gameType),
+    player1Idx: index("player1_idx").on(table.player1),
   })
 );

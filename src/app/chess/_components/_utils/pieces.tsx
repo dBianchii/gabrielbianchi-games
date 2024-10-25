@@ -75,7 +75,7 @@ export const PieceIMG = ({ pieceId }: { pieceId: keyof typeof pieceIds }) => {
   return (
     <Image
       alt=""
-      src={`pieces/${pieceIdToSrcMap[pieceId]}.svg`}
+      src={`/pieces/${pieceIdToSrcMap[pieceId]}.svg`}
       width={63}
       height={63}
     />

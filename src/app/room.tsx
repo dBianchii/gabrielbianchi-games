@@ -7,12 +7,12 @@ import {
   initialBoard,
   initialCastling,
   initialTurn,
-} from "./Chess/_components/_utils/initial-game-state";
+} from "./chess/_components/_utils/initial-game-state";
 
-export function Room({ children }: { children: ReactNode }) {
+export function Room({ children, id }: { children: ReactNode; id: string }) {
   return (
     <RoomProvider
-      id="anotherRoom"
+      id={id}
       initialStorage={{
         board: initialBoard,
         turn: initialTurn,
@@ -20,7 +20,13 @@ export function Room({ children }: { children: ReactNode }) {
       }}
       initialPresence={{ color: null }}
     >
-      <ClientSideSuspense fallback={<div>Chess is loading...</div>}>
+      <ClientSideSuspense
+        fallback={
+          <div className="flex flex-col items-center justify-center">
+            Joining room...
+          </div>
+        }
+      >
         {() => children}
       </ClientSideSuspense>
     </RoomProvider>

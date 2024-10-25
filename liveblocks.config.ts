@@ -4,8 +4,8 @@ import {
   type LiveList,
 } from "@liveblocks/client";
 import { createRoomContext } from "@liveblocks/react";
-import { type Color } from "~/app/Chess/_components/_utils/initial-game-state";
-import { type Piece } from "~/app/Chess/_components/_utils/pieces";
+import { type Color } from "~/app/chess/_components/_utils/initial-game-state";
+import { type Piece } from "~/app/chess/_components/_utils/pieces";
 import { env } from "~/env";
 
 const client = createClient({
